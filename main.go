@@ -33,7 +33,10 @@ func usage() {
 func do_ping() error {
 	c, err := dbus.Dial("unix:path=/sys/fs/cgroup/cgmanager/sock")
 	if err != nil {
-		fmt.Println("Error connecting to cgmanager: ", err)
+		return err
+	}
+	err = c.Auth(nil)
+	if err != nil {
 		return err
 	}
 	obj := c.Object("org.linuxcontainers.cgmanager0_0", "/org/linuxcontainers/cgmanager")
@@ -47,23 +50,24 @@ func do_ping() error {
 func do_ls(controller string, cgroup string) (*[]int32, error) {
 	c, err := dbus.Dial("unix:path=/sys/fs/cgroup/cgmanager/sock")
 	if err != nil {
-		fmt.Println("Error connecting to cgmanager: ", err)
 		return nil, err
 	}
-	fmt.Println("1")
+	err = c.Auth(nil)
+	if err != nil {
+		return nil, err
+	}
 	obj := c.Object("org.linuxcontainers.cgmanager0_0", "/org/linuxcontainers/cgmanager")
 	fmt.Println("2, obj is ", obj)
 	call := obj.Call("org.linuxcontainers.cgmanager0_0.GetTasks", 0, controller, cgroup)
-	fmt.Println("3")
 	if call.Err != nil {
 		return nil, call.Err
 	}
-	var l *[]int32
+	var l []int32
 	err = call.Store(&l)
 	if err != nil {
 		return nil, err
 	}
-	return l, nil
+	return &l, nil
 }
 
 func run() error {
@@ -77,6 +81,7 @@ func run() error {
 			fmt.Println("Error calling ping: ", err)
 			os.Exit(1)
 		}
+		fmt.Println("Ping succeeded")
 		os.Exit(0)
 	}
 
