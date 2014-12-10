@@ -13,13 +13,13 @@ func main() {
 	}
 }
 
-// go-cgm ping
-// go-cgm gettasks freezer lxc/t1  # show pids
-// go-cgm controllers # list controllers
-// go-cgm ls freezer lxc/t1  # list files in such a cgroup
 // go-cgm cat freezer lxc/t1 freezer.state
-// go-cgm set freezer lxc/t1 freezer.state FROZEn
+// go-cgm controllers # list controllers
+// go-cgm gettasks freezer lxc/t1  # show pids
+// go-cgm ls freezer lxc/t1  # list files in such a cgroup
 // go-cgm move freezer lxc/t1 pid1
+// go-cgm ping
+// go-cgm set freezer lxc/t1 freezer.state FROZEn
 
 func usage(cmd *string) {
 	if cmd == nil {
@@ -41,6 +41,9 @@ func usage(cmd *string) {
 		os.Exit(1)
 	case "controller":
 		fmt.Println("controllers")
+		os.Exit(1)
+	case "cat":
+		fmt.Println("cat <controller> <cgroup> <file>")
 		os.Exit(1)
 	}
 	fmt.Println("Unknown command: ", *cmd)
@@ -101,6 +104,22 @@ func run() error {
 		}
 		for _, c := range *l {
 			fmt.Println(c)
+		}
+		os.Exit(0)
+	case "cat":
+		if len(os.Args) < 5 {
+			usage(&os.Args[1])
+			os.Exit(1)
+		}
+		v, err := cgm.Cat(os.Args[2], os.Args[3], os.Args[4])
+		if err != nil {
+			fmt.Println("Error calling cat: ", err)
+			os.Exit(1)
+		}
+		if v != nil {
+			fmt.Printf("%s\n", *v)
+		} else {
+			fmt.Println("Empty file")
 		}
 		os.Exit(0)
 	}
