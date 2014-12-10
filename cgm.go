@@ -33,7 +33,6 @@ func Gettasks(controller string, cgroup string) (*[]int32, error) {
 		return nil, err
 	}
 	obj := c.Object("org.linuxcontainers.cgmanager0_0", "/org/linuxcontainers/cgmanager")
-	fmt.Println("2, obj is ", obj)
 	call := obj.Call("org.linuxcontainers.cgmanager0_0.GetTasks", 0, controller, cgroup)
 	if call.Err != nil {
 		return nil, call.Err
@@ -63,7 +62,6 @@ func Ls(controller, cgroup string) (*[]Cgmfile, error) {
 		return nil, err
 	}
 	obj := c.Object("org.linuxcontainers.cgmanager0_0", "/org/linuxcontainers/cgmanager")
-	fmt.Println("2, obj is ", obj)
 	call := obj.Call("org.linuxcontainers.cgmanager0_0.ListKeys", 0, controller, cgroup)
 	if call.Err != nil {
 		return nil, call.Err
@@ -86,7 +84,6 @@ func ListControllers() (*[]string, error) {
 		return nil, err
 	}
 	obj := c.Object("org.linuxcontainers.cgmanager0_0", "/org/linuxcontainers/cgmanager")
-	fmt.Println("2, obj is ", obj)
 	call := obj.Call("org.linuxcontainers.cgmanager0_0.ListControllers", 0)
 	if call.Err != nil {
 		return nil, call.Err
@@ -109,7 +106,6 @@ func Cat(controller, cgroup, file string) (*string, error) {
 		return nil, err
 	}
 	obj := c.Object("org.linuxcontainers.cgmanager0_0", "/org/linuxcontainers/cgmanager")
-	fmt.Println("2, obj is ", obj)
 	call := obj.Call("org.linuxcontainers.cgmanager0_0.GetValue", 0, controller, cgroup, file)
 	if call.Err != nil {
 		return nil, call.Err
