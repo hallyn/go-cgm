@@ -1,8 +1,6 @@
 package cgm
 
 import (
-	"fmt"
-
 	"github.com/guelfey/go.dbus"
 )
 
@@ -116,4 +114,21 @@ func Cat(controller, cgroup, file string) (*string, error) {
 		return nil, err
 	}
 	return &l, nil
+}
+
+func Set(controller, cgroup, file, value string) error {
+	c, err := dbus.Dial("unix:path=/sys/fs/cgroup/cgmanager/sock")
+	if err != nil {
+		return err
+	}
+	err = c.Auth(nil)
+	if err != nil {
+		return err
+	}
+	obj := c.Object("org.linuxcontainers.cgmanager0_0", "/org/linuxcontainers/cgmanager")
+	call := obj.Call("org.linuxcontainers.cgmanager0_0.SetValue", 0, controller, cgroup, file, value)
+	if call.Err != nil {
+		return call.Err
+	}
+	return nil
 }

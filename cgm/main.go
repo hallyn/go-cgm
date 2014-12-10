@@ -45,6 +45,9 @@ func usage(cmd *string) {
 	case "cat":
 		fmt.Println("cat <controller> <cgroup> <file>")
 		os.Exit(1)
+	case "set":
+		fmt.Println("set <controller> <cgroup> <file> <new-value>")
+		os.Exit(1)
 	}
 	fmt.Println("Unknown command: ", *cmd)
 	os.Exit(1)
@@ -106,6 +109,7 @@ func run() error {
 			fmt.Println(c)
 		}
 		os.Exit(0)
+
 	case "cat":
 		if len(os.Args) < 5 {
 			usage(&os.Args[1])
@@ -120,6 +124,18 @@ func run() error {
 			fmt.Printf("%s\n", *v)
 		} else {
 			fmt.Println("Empty file")
+		}
+		os.Exit(0)
+
+	case "set":
+		if len(os.Args) < 6 {
+			usage(&os.Args[1])
+			os.Exit(1)
+		}
+		err := cgm.Set(os.Args[2], os.Args[3], os.Args[4], os.Args[5])
+		if err != nil {
+			fmt.Println("Error calling set: ", err)
+			os.Exit(1)
 		}
 		os.Exit(0)
 	}
