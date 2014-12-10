@@ -14,6 +14,7 @@ func main() {
 }
 
 // go-cgm cat freezer lxc/t1 freezer.state
+// go-cgm create freezer xxx # create child cgroup
 // go-cgm controllers # list controllers
 // go-cgm gettasks freezer lxc/t1  # show pids
 // go-cgm getchildren freezer lxc/t1  # show child cgroups
@@ -25,16 +26,21 @@ func main() {
 func usage(cmd *string) {
 	if cmd == nil {
 		fmt.Println("cat <controller> <cgroup> <file>")
+		fmt.Println("create <controller> <cgroup>")
 		fmt.Println("controllers")
 		fmt.Println("getchildren <controller> <cgroup>")
 		fmt.Println("gettasks <controller> <cgroup>")
 		fmt.Println("ls <controller> <cgroup>")
 		fmt.Println("move <controller> <cgroup> <pid>")
 		fmt.Println("ping")
+		fmt.Println("remove <controller> <cgroup>")
 		fmt.Println("set <controller> <cgroup> <file> <new-value>")
 		os.Exit(0)
 	}
 	switch (*cmd) {
+	case "create":
+		fmt.Println("create <controller> <cgroup>")
+		os.Exit(1)
 	case "gettasks":
 		fmt.Println("gettasks <controller> <cgroup>")
 		os.Exit(1)
@@ -52,6 +58,9 @@ func usage(cmd *string) {
 		os.Exit(1)
 	case "move":
 		fmt.Println("move <controller> <cgroup> <pid>")
+		os.Exit(1)
+	case "remove":
+		fmt.Println("remove <controller> <cgroup>")
 		os.Exit(1)
 	case "set":
 		fmt.Println("set <controller> <cgroup> <file> <new-value>")
@@ -76,6 +85,30 @@ func run() error {
 		fmt.Println("Ping succeeded")
 		os.Exit(0)
 
+	case "create":
+		if len(os.Args) < 4 {
+			usage(&os.Args[1])
+			os.Exit(1)
+		}
+		err := cgm.Create(os.Args[2], os.Args[3])
+		if err != nil {
+			fmt.Println("Error calling create: ", err)
+			os.Exit(1)
+		}
+		os.Exit(0)
+
+	case "remove":
+		if len(os.Args) < 4 {
+			usage(&os.Args[1])
+			os.Exit(1)
+		}
+		err := cgm.Remove(os.Args[2], os.Args[3])
+		if err != nil {
+			fmt.Println("Error calling remove: ", err)
+			os.Exit(1)
+		}
+		os.Exit(0)
+
 	case "getchildren":
 		if len(os.Args) < 4 {
 			usage(&os.Args[1])
@@ -83,7 +116,7 @@ func run() error {
 		}
 		l, err := cgm.GetChildren(os.Args[2], os.Args[3])
 		if err != nil {
-			fmt.Println("Error calling gettasks: ", err)
+			fmt.Println("Error calling getchildren: ", err)
 			os.Exit(1)
 		}
 		if l == nil {

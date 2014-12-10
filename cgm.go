@@ -23,6 +23,23 @@ func Ping() error {
 	return nil
 }
 
+func Create(controller string, cgroup string) error {
+	c, err := dbus.Dial("unix:path=/sys/fs/cgroup/cgmanager/sock")
+	if err != nil {
+		return err
+	}
+	err = c.Auth(nil)
+	if err != nil {
+		return err
+	}
+	obj := c.Object("org.linuxcontainers.cgmanager0_0", "/org/linuxcontainers/cgmanager")
+	call := obj.Call("org.linuxcontainers.cgmanager0_0.Create", 0, controller, cgroup)
+	if call.Err != nil {
+		return call.Err
+	}
+	return nil
+}
+
 func GetChildren(controller string, cgroup string) (*[]string, error) {
 	c, err := dbus.Dial("unix:path=/sys/fs/cgroup/cgmanager/sock")
 	if err != nil {
@@ -156,6 +173,23 @@ func MovePid(controller, cgroup, pid string) error {
 	}
 	pid32 := int32(pidi)
 	call := obj.Call("org.linuxcontainers.cgmanager0_0.MovePid", 0, controller, cgroup, pid32)
+	if call.Err != nil {
+		return call.Err
+	}
+	return nil
+}
+
+func Remove(controller, cgroup string) error {
+	c, err := dbus.Dial("unix:path=/sys/fs/cgroup/cgmanager/sock")
+	if err != nil {
+		return err
+	}
+	err = c.Auth(nil)
+	if err != nil {
+		return err
+	}
+	obj := c.Object("org.linuxcontainers.cgmanager0_0", "/org/linuxcontainers/cgmanager")
+	call := obj.Call("org.linuxcontainers.cgmanager0_0.Remove", 0, controller, cgroup, int32(1))
 	if call.Err != nil {
 		return call.Err
 	}
