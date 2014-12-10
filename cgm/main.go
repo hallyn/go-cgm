@@ -16,6 +16,7 @@ func main() {
 // go-cgm cat freezer lxc/t1 freezer.state
 // go-cgm controllers # list controllers
 // go-cgm gettasks freezer lxc/t1  # show pids
+// go-cgm getchildren freezer lxc/t1  # show child cgroups
 // go-cgm ls freezer lxc/t1  # list files in such a cgroup
 // go-cgm move freezer lxc/t1 pid1
 // go-cgm ping
@@ -25,6 +26,7 @@ func usage(cmd *string) {
 	if cmd == nil {
 		fmt.Println("cat <controller> <cgroup> <file>")
 		fmt.Println("controllers")
+		fmt.Println("getchildren <controller> <cgroup>")
 		fmt.Println("gettasks <controller> <cgroup>")
 		fmt.Println("ls <controller> <cgroup>")
 		fmt.Println("move <controller> <cgroup> <pid>")
@@ -35,6 +37,9 @@ func usage(cmd *string) {
 	switch (*cmd) {
 	case "gettasks":
 		fmt.Println("gettasks <controller> <cgroup>")
+		os.Exit(1)
+	case "getchildren":
+		fmt.Println("getchildren <controller> <cgroup>")
 		os.Exit(1)
 	case "ls":
 		fmt.Println("ls <controller> <cgroup> <directory>")
@@ -66,6 +71,21 @@ func run() error {
 			os.Exit(1)
 		}
 		fmt.Println("Ping succeeded")
+		os.Exit(0)
+
+	case "getchildren":
+		if len(os.Args) < 4 {
+			usage(&os.Args[1])
+			os.Exit(1)
+		}
+		l, err := cgm.GetChildren(os.Args[2], os.Args[3])
+		if err != nil {
+			fmt.Println("Error calling gettasks: ", err)
+			os.Exit(1)
+		}
+		for _, v := range *l {
+			fmt.Println(v)
+		}
 		os.Exit(0)
 
 	case "gettasks":
