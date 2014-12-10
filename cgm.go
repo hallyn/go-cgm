@@ -75,3 +75,26 @@ func Ls(controller, cgroup string) (*[]Cgmfile, error) {
 	}
 	return &l, nil
 }
+
+func ListControllers() (*[]string, error) {
+	c, err := dbus.Dial("unix:path=/sys/fs/cgroup/cgmanager/sock")
+	if err != nil {
+		return nil, err
+	}
+	err = c.Auth(nil)
+	if err != nil {
+		return nil, err
+	}
+	obj := c.Object("org.linuxcontainers.cgmanager0_0", "/org/linuxcontainers/cgmanager")
+	fmt.Println("2, obj is ", obj)
+	call := obj.Call("org.linuxcontainers.cgmanager0_0.ListControllers", 0)
+	if call.Err != nil {
+		return nil, call.Err
+	}
+	var l []string
+	err = call.Store(&l)
+	if err != nil {
+		return nil, err
+	}
+	return &l, nil
+}
