@@ -86,6 +86,10 @@ func run() error {
 			fmt.Println("Error calling gettasks: ", err)
 			os.Exit(1)
 		}
+		if l == nil {
+			fmt.Println("Bogus return value")
+			os.Exit(1)
+		}
 		for _, v := range *l {
 			fmt.Println(v)
 		}
@@ -99,6 +103,10 @@ func run() error {
 		l, err := cgm.Gettasks(os.Args[2], os.Args[3])
 		if err != nil {
 			fmt.Println("Error calling gettasks: ", err)
+			os.Exit(1)
+		}
+		if l == nil {
+			fmt.Println("Bogus return value")
 			os.Exit(1)
 		}
 		for _, v := range *l {
@@ -116,6 +124,10 @@ func run() error {
 			fmt.Println("Error calling ls: ", err)
 			os.Exit(1)
 		}
+		if l == nil {
+			fmt.Println("Bogus return value")
+			os.Exit(1)
+		}
 		var v cgm.Cgmfile
 		for _, v = range *l {
 			fmt.Println(v.Name)
@@ -126,6 +138,10 @@ func run() error {
 		l, err := cgm.ListControllers()
 		if err != nil {
 			fmt.Println("Error calling ListControllers: ", err)
+			os.Exit(1)
+		}
+		if l == nil {
+			fmt.Println("Bogus return value")
 			os.Exit(1)
 		}
 		for _, c := range *l {
