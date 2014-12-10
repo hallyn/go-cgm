@@ -1,6 +1,8 @@
 package cgm
 
 import (
+	"strconv"
+
 	"github.com/guelfey/go.dbus"
 )
 
@@ -136,6 +138,28 @@ func Cat(controller, cgroup, file string) (*string, error) {
 		return nil, err
 	}
 	return &l, nil
+}
+
+func MovePid(controller, cgroup, pid string) error {
+	c, err := dbus.Dial("unix:path=/sys/fs/cgroup/cgmanager/sock")
+	if err != nil {
+		return err
+	}
+	err = c.Auth(nil)
+	if err != nil {
+		return err
+	}
+	obj := c.Object("org.linuxcontainers.cgmanager0_0", "/org/linuxcontainers/cgmanager")
+	pidi, err := strconv.Atoi(pid)
+	if err != nil {
+		return err
+	}
+	pid32 := int32(pidi)
+	call := obj.Call("org.linuxcontainers.cgmanager0_0.MovePid", 0, controller, cgroup, pid32)
+	if call.Err != nil {
+		return call.Err
+	}
+	return nil
 }
 
 func Set(controller, cgroup, file, value string) error {

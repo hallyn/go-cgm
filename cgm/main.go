@@ -50,6 +50,9 @@ func usage(cmd *string) {
 	case "cat":
 		fmt.Println("cat <controller> <cgroup> <file>")
 		os.Exit(1)
+	case "move":
+		fmt.Println("move <controller> <cgroup> <pid>")
+		os.Exit(1)
 	case "set":
 		fmt.Println("set <controller> <cgroup> <file> <new-value>")
 		os.Exit(1)
@@ -144,6 +147,18 @@ func run() error {
 			fmt.Printf("%s\n", *v)
 		} else {
 			fmt.Println("Empty file")
+		}
+		os.Exit(0)
+
+	case "move":
+		if len(os.Args) < 5 {
+			usage(&os.Args[1])
+			os.Exit(1)
+		}
+		err := cgm.MovePid(os.Args[2], os.Args[3], os.Args[4])
+		if err != nil {
+			fmt.Println("Error calling movepid: ", err)
+			os.Exit(1)
 		}
 		os.Exit(0)
 
