@@ -47,13 +47,13 @@ func Gettasks(controller string, cgroup string) (*[]int32, error) {
 }
 
 type Cgmfile struct {
-	name string
-	owner int32
-	group int32
-	perms int32
+	Name string
+	Owner uint32
+	Group uint32
+	Perms uint32
 }
 
-func Ls(controller, cgroup, dir string) (*[]Cgmfile, error) {
+func Ls(controller, cgroup string) (*[]Cgmfile, error) {
 	c, err := dbus.Dial("unix:path=/sys/fs/cgroup/cgmanager/sock")
 	if err != nil {
 		return nil, err
@@ -64,7 +64,7 @@ func Ls(controller, cgroup, dir string) (*[]Cgmfile, error) {
 	}
 	obj := c.Object("org.linuxcontainers.cgmanager0_0", "/org/linuxcontainers/cgmanager")
 	fmt.Println("2, obj is ", obj)
-	call := obj.Call("org.linuxcontainers.cgmanager0_0.ListKeys", 0, controller, cgroup, dir)
+	call := obj.Call("org.linuxcontainers.cgmanager0_0.ListKeys", 0, controller, cgroup)
 	if call.Err != nil {
 		return nil, call.Err
 	}

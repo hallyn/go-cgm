@@ -73,17 +73,18 @@ func run() error {
 		os.Exit(0)
 
 	case "ls":
-		if len(os.Args) < 5 {
+		if len(os.Args) < 4 {
 			usage(&os.Args[1])
 			os.Exit(1)
 		}
-		l, err := cgm.Ls(os.Args[2], os.Args[3], os.Args[4])
+		l, err := cgm.Ls(os.Args[2], os.Args[3])
 		if err != nil {
 			fmt.Println("Error calling ls: ", err)
 			os.Exit(1)
 		}
-		for _, v := range *l {
-			fmt.Println(v)
+		var v cgm.Cgmfile
+		for _, v = range *l {
+			fmt.Println(v.Name)
 		}
 		os.Exit(0)
 	}
